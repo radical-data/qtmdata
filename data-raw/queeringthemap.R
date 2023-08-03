@@ -9,9 +9,11 @@ total_moments <- json$count |> as.numeric()
 
 queeringthemap <- tibble("v1" = numeric(), "v2" = numeric(), "v3" = character(), "v4" = numeric())
 
-for (i in 1:total_pages) {
+for (i in 0:total_pages) {
   print(paste0("fetching page ", as.character(i), " (", 100*round(i/total_pages, 3), "%)"))
-  response <- httr2::request(paste0("https://www.queeringthemap.com/moments?page=",i)) |>
+  url <- dplyr::if_else(i == 0, "https://www.queeringthemap.com/moments",
+                 paste0("https://www.queeringthemap.com/moments?page=",i))
+  response <- httr2::request(url) |>
     httr2::req_perform()
   json <- httr2::resp_body_json(response)
   to_add <- json$moment_list |>
